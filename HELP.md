@@ -1,7 +1,7 @@
 # Read Me First
 The following was discovered as part of building this project:
 
-* The original package name 'com.otabek.e-commerce-backend' is invalid and this project uses 'com.otabek.e_commerce_backend' instead.
+* The original package name 'com.otabek.e-commerce-backend' is invalid and this project uses 'com.otabek.nexus' instead.
 
 # Getting Started
 

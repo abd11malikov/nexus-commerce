@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Detail - Nexus Commerce</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/image/favicon.ico">
+</head>
+<body>
+<nav>
+    <h1>Nexus Shop</h1>
+    <div id="auth-nav">
+        <!-- JS will fill this based on auth status -->
+    </div>
+</nav>
+
+<main id="product-detail-container">
+    <div id="loading">Loading product details...</div>
+    <div id="product-error" style="display: none;">
+        <p>Product not found. <a href="index.html">Go back to shop</a></p>
+    </div>
+    
+    <div id="product-content" style="display: none;">
+        <div class="product-detail-card">
+            <div class="product-image-section">
+                <img id="product-image" src="" alt="Product Image" onerror="this.src='/image/placeholder.png';">
+            </div>
+            
+            <div class="product-info-section">
+                <h1 id="product-name">Product Name</h1>
+                
+                <div class="product-price">
+                    <span id="product-price">$0.00</span>
+                </div>
+                
+                <div class="product-stock">
+                    <span id="product-stock">In Stock: 0</span>
+                </div>
+                
+                <div class="product-description">
+                    <h3>Description</h3>
+                    <p id="product-description">Product description will appear here...</p>
+                </div>
+                
+                <div class="quantity-selector">
+                    <label for="quantity-input">Quantity:</label>
+                    <div class="quantity-controls">
+                        <button type="button" id="decrease-btn" onclick="decreaseQuantity()">-</button>
+                        <input type="number" id="quantity-input" min="1" max="1" value="1">
+                        <button type="button" id="increase-btn" onclick="increaseQuantity()">+</button>
+                    </div>
+                    <div id="stock-warning" class="warning-message" style="display: none;"></div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="add-to-cart-btn" class="btn btn-primary" onclick="addToCartFromDetail()">Add to Cart</button>
+                    <button id="back-to-shop-btn" class="btn btn-secondary" onclick="goBackToShop()">Back to Shop</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

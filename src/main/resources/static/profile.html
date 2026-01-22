@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile - Nexus Commerce</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="app.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/image/favicon.ico">
+</head>
+<body>
+<nav>
+    <div id="nav-left">
+        <h1>Nexus Commerce Shop</h1>
+    </div>
+    <div id="nav-right">
+        <div id="cart-icon" onclick="openCartModal()" style="cursor: pointer; position: relative; margin-right: 20px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span id="cart-count" class="cart-count-badge">0</span>
+        </div>
+        <div id="admin-panel-btn" style="margin-right: 10px; display: none;">
+            <a href="admin.html" class="btn" style="background-color: #ec4899; text-decoration: none;">Admin Panel</a>
+        </div>
+        <div id="auth-nav">
+            <!-- JS will fill this based on auth status -->
+        </div>
+    </div>
+</nav>
+
+<main>
+    <div class="profile-container">
+        <h2>User Profile</h2>
+        
+        <div class="profile-info">
+            <h3>Personal Information</h3>
+            <div id="user-info">
+                <p>Loading user information...</p>
+            </div>
+        </div>
+        
+        <div class="order-history">
+            <h3>Order History</h3>
+            <div id="orders-list">
+                <p>Loading order history...</p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>
