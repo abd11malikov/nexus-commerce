@@ -31,6 +31,7 @@ public class EmailService {
             String htmlContent = "<h1>Hi " + username + "!</h1>"
                     + "<p>Great news! Your order <strong>#" + orderId + "</strong> has been delivered.</p>"
                     + "<p>It was sent to your registered address.</p>"
+                    + "<p>Don't forget to give feedback to t.me/abd11malikov about this website</p>"
                     + "<p>Thank you for choosing Nexus Commerce.</p>";
 
             helper.setText(htmlContent, true);
