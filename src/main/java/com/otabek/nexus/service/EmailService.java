@@ -1,46 +1,48 @@
 package com.otabek.nexus.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
+    @Value("${BREVO_API_KEY}")
+    private String apiKey;
 
-    @Value("${spring.mail.username}")
-    private String fromEmail;
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Async
     public void sendOrderDeliveredEmail(String toEmail, String username, Long orderId) {
+        String url = "https://api.brevo.com/v3/smtp/email";
+
+        Map<String, Object> requestBody = Map.of(
+                "sender", Map.of("name", "Nexus Shop", "email", "jasonalexamiller@gmail.com"),
+                "to", List.of(Map.of("email", toEmail, "name", username)),
+                "subject", "📦 Your Order #" + orderId + " is Delivered!",
+                "htmlContent", "<h1>Hi " + username + "!</h1><p>Your order is delivered! Thank you for choosing us)</p>"
+        );
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api-key", apiKey);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
         try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            helper.setFrom(fromEmail);
-            helper.setTo(toEmail);
-            helper.setSubject("📦 Your Order #" + orderId + " is Delivered!");
-
-            String htmlContent = "<h1>Hi " + username + "!</h1>"
-                    + "<p>Great news! Your order <strong>#" + orderId + "</strong> has been delivered.</p>"
-                    + "<p>It was sent to your registered address.</p>"
-                    + "<p>Don't forget to give feedback to t.me/abd11malikov about this website</p>"
-                    + "<p>Thank you for choosing Nexus Commerce.</p>";
-
-            helper.setText(htmlContent, true);
-
-            mailSender.send(message);
-            System.out.println("✅ Email sent successfully to " + toEmail);
-
-        } catch (MessagingException e) {
-            System.err.println("❌ Failed to send email: " + e.getMessage());
+            ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
+            if (response.getStatusCode().is2xxSuccessful()) {
+                System.out.println("✅ API Email sent successfully!");
+            }
+        } catch (Exception e) {
+            System.err.println("❌ API Email failed: " + e.getMessage());
         }
     }
 }
