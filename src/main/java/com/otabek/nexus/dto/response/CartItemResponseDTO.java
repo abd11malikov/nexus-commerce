@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 public class CartItemResponseDTO {
     private Long id;
     private int quantity;
-    private ProductResponseDTO product; // Use Product DTO instead of entity
+    private ProductResponseDTO product; 
 }

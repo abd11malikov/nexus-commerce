@@ -13,6 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CartResponseDTO {
     private Long id;
-    private Long userId; // Store only the ID instead of the full User entity
+    private Long userId; 
     private List<CartItemResponseDTO> items;
 }

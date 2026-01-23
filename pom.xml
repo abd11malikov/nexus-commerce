@@ -9,7 +9,7 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.otabek</groupId>
-	<artifactId>e-commerce-backend</artifactId>
+	<artifactId>nexus-commerce</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>e-commerce-backend</name>
 	<description>Demo project for Spring Boot</description>

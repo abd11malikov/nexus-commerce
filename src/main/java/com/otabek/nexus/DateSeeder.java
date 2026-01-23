@@ -55,7 +55,6 @@ public class DateSeeder implements CommandLineRunner {
             userService.create(userReq3);
             userService.promoteToAdmin(1);
 
-            // Create categories
             CategoryRequestDTO electronicsCategory = new CategoryRequestDTO();
             electronicsCategory.setName("Electronics");
             CategoryResponseDTO electronicsCat = categoryService.create(electronicsCategory);
@@ -76,7 +75,6 @@ public class DateSeeder implements CommandLineRunner {
             sportsCategory.setName("Sports");
             CategoryResponseDTO sportsCat = categoryService.create(sportsCategory);
 
-            // Create products for Electronics category
             ProductRequestDTO p1 = new ProductRequestDTO(
                     "MacBook Pro M3",
                     "Super fast laptop with M3 chip",
@@ -104,7 +102,6 @@ public class DateSeeder implements CommandLineRunner {
                     electronicsCat.getId()
             );
 
-            // Create products for Clothing category
             ProductRequestDTO p4 = new ProductRequestDTO(
                     "Designer T-Shirt",
                     "Comfortable cotton t-shirt with unique design",
@@ -123,7 +120,6 @@ public class DateSeeder implements CommandLineRunner {
                     clothingCat.getId()
             );
 
-            // Create products for Books category
             ProductRequestDTO p6 = new ProductRequestDTO(
                     "Bestselling Novel",
                     "Award-winning fiction novel",
@@ -133,7 +129,6 @@ public class DateSeeder implements CommandLineRunner {
                     booksCat.getId()
             );
 
-            // Create products for Home & Garden category
             ProductRequestDTO p7 = new ProductRequestDTO(
                     "Indoor Plant",
                     "Low maintenance plant for your home",
@@ -143,7 +138,6 @@ public class DateSeeder implements CommandLineRunner {
                     homeGardenCat.getId()
             );
 
-            // Create products for Sports category
             ProductRequestDTO p8 = new ProductRequestDTO(
                     "Fitness Tracker",
                     "Track your workouts and health metrics",
@@ -167,15 +161,15 @@ public class DateSeeder implements CommandLineRunner {
             order.setUserId(1);
 
             OrderItemRequestDTO item1 = new OrderItemRequestDTO();
-            item1.setProductId(prod1Id);  // MacBook Pro
+            item1.setProductId(prod1Id);
             item1.setQuantity(1);
 
             OrderItemRequestDTO item2 = new OrderItemRequestDTO();
-            item2.setProductId(prod2Id);  // Wireless Mouse
+            item2.setProductId(prod2Id);
             item2.setQuantity(2);
 
             OrderItemRequestDTO item3 = new OrderItemRequestDTO();
-            item3.setProductId(prod4Id);  // Designer T-Shirt
+            item3.setProductId(prod4Id);
             item3.setQuantity(3);
 
             order.setOrderItems(List.of(item1, item2, item3));

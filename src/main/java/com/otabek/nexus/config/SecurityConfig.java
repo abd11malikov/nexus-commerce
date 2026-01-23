@@ -48,16 +48,16 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login")
                         .permitAll()
                         .requestMatchers("/api/products").permitAll()
-                        .requestMatchers("/api/products/**").permitAll() // Allow access to individual product details
+                        .requestMatchers("/api/products/**").permitAll()
                         .requestMatchers("/api/products/search").permitAll()
                         .requestMatchers("/api/categories").permitAll()
-                        .requestMatchers("/api/users").permitAll() // Allow user registration
-                        .requestMatchers("/api/users/me").authenticated() // Current user info requires authentication
-                        .requestMatchers("/api/cart/**").authenticated() // Cart requires authentication
-                        .requestMatchers("/api/orders").hasRole("ADMIN") // Get all orders requires admin role
-                        .requestMatchers("/api/orders/user").authenticated() // Get user orders requires authentication
-                        .requestMatchers("/api/orders/create").authenticated() // Place order requires authentication
-                        .requestMatchers("/api/orders/**").hasRole("ADMIN") // All other order endpoints require admin role
+                        .requestMatchers("/api/users").permitAll()
+                        .requestMatchers("/api/users/me").authenticated()
+                        .requestMatchers("/api/cart/**").authenticated()
+                        .requestMatchers("/api/orders").hasRole("ADMIN")
+                        .requestMatchers("/api/orders/user").authenticated()
+                        .requestMatchers("/api/orders/create").authenticated()
+                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
                         .requestMatchers("/", "/index.html", "/style.css", "/login.html", "/register.html", "/app.js", "/product-detail.html", "/checkout.html", "/profile.html", "/admin.html").permitAll()
                         .requestMatchers("/image/**").permitAll()
                         .anyRequest().authenticated()

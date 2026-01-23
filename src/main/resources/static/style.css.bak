@@ -76,14 +76,14 @@ main {
 
 #product-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr); /* Default to 2 columns to ensure mobile shows 2 */
     gap: 15px;
     padding: 10px;
     margin: 0;
     overflow-x: hidden;
 }
 
-
+/* Extra small devices (phones, up to 575px) - 2 products per row */
 @media (max-width: 575px) {
     #product-container {
         grid-template-columns: repeat(2, 1fr);
@@ -91,7 +91,7 @@ main {
     }
 }
 
-
+/* Small devices (landscape phones, 576px and up) - 2 products per row */
 @media (min-width: 576px) and (max-width: 767px) {
     #product-container {
         grid-template-columns: repeat(2, 1fr);
@@ -99,21 +99,21 @@ main {
     }
 }
 
-
+/* Medium devices (tablets, 768px and up) - 3 products per row */
 @media (min-width: 768px) and (max-width: 991px) {
     #product-container {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
-
+/* Large devices (desktops, 992px and up) - 5 products per row */
 @media (min-width: 992px) and (max-width: 1199px) {
     #product-container {
         grid-template-columns: repeat(5, 1fr);
     }
 }
 
-
+/* Extra large devices (large desktops, 1200px and up) - 5 products per row */
 @media (min-width: 1200px) {
     #product-container {
         grid-template-columns: repeat(5, 1fr);
@@ -144,7 +144,7 @@ main {
     flex-shrink: 0;
 }
 
-
+/* Adjust card styles for mobile */
 @media (max-width: 767px) {
     .card {
         min-height: 250px;

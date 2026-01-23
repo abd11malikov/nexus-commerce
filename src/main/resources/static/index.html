@@ -10,9 +10,6 @@
 </head>
 <body>
 <nav>
-    <div id="nav-left">
-        <h1>Nexus Commerce Shop</h1>
-    </div>
     <div id="nav-right">
         <div id="cart-icon" onclick="openCartModal()" style="cursor: pointer; position: relative; margin-right: 20px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -26,7 +23,7 @@
             <a href="admin.html" class="btn" style="background-color: #ec4899; text-decoration: none;">Admin Panel</a>
         </div>
         <div id="auth-nav">
-            <!-- JS will fill this based on auth status -->
+            
         </div>
     </div>
 </nav>
@@ -38,14 +35,13 @@
         </div>
     </aside>
     <main>
-        <h2>Nexus Commerce Shop 🛒</h2>
         <div id="product-container">
             <p>Loading products from Java Backend...</p>
         </div>
     </main>
 </div>
 
-<!-- Product Detail Modal -->
+
 <div id="product-modal" class="modal-overlay" style="display: none;">
     <div class="modal-content">
         <div class="modal-header">
@@ -90,7 +86,7 @@
     </div>
 </div>
 
-<!-- Cart Modal -->
+
 <div id="cart-modal" class="modal-overlay" style="display: none;">
     <div class="modal-content cart-modal-content">
         <div class="modal-header">

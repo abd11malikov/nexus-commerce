@@ -17,7 +17,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public CategoryResponseDTO create(CategoryRequestDTO requestDTO){
-//        categoryRepository.findCategoryByName(requestDTO.getName()).orElseThrow(()->new RuntimeException("There is category by this name!"));
+
         Category category = mapToEntity(requestDTO);
         Category save = categoryRepository.save(category);
         return mapToResponseDTO(save);

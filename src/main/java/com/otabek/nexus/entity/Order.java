@@ -22,7 +22,7 @@ public class Order extends BaseEntity{
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal totalAmount;
 
-    @Column(length = 500) // Store shipping address
+    @Column(length = 500) 
     private String shippingAddress;
 
     @ManyToOne(fetch = FetchType.LAZY)

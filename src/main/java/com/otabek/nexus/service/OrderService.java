@@ -40,15 +40,15 @@ public class OrderService {
         order.setUser(user);
         order.setStatus(Status.PENDING);
 
-        // Set additional fields if available
+        
         if (requestDTO.getShippingAddress() != null) {
             order.setShippingAddress(requestDTO.getShippingAddress());
         }
 
-        // Handle payment info if available
+        
         if (requestDTO.getPaymentInfo() != null) {
-            // In a real application, you would process payment info securely
-            // For now, we'll just acknowledge it
+            
+            
         }
 
         List<OrderItem> orderItems = new ArrayList<>();

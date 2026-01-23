@@ -22,12 +22,12 @@ public class CartService {
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
 
-    // ==========================================
-    // 1. GET CART (READ / CREATE) - Returns DTO
-    // ==========================================
+    
+    
+    
     @Transactional
     public CartResponseDTO getCartAsDTO(Long userId) {
-        // If cart exists, return it. If not, CREATE a new one.
+        
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -43,9 +43,9 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    // ==========================================
-    // 2. ADD TO CART (CREATE / UPDATE)
-    // ==========================================
+    
+    
+    
     @Transactional
     public void addToCart(Long userId, AddToCartDTO request) {
         Cart cart = getCart(userId);
@@ -53,22 +53,22 @@ public class CartService {
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        // Stock Check 🛡️
+        
         if (product.getStockQuantity() < request.getQuantity()) {
             throw new RuntimeException("Not enough stock available!");
         }
 
-        // SMART LOGIC: Does this product already exist in the cart?
+        
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getProduct().getId().equals(product.getId()))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            // SCENARIO A: Item exists. Update quantity.
+            
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + request.getQuantity());
         } else {
-            // SCENARIO B: New Item. Add it.
+            
             CartItem newItem = new CartItem();
             newItem.setCart(cart);
             newItem.setProduct(product);
@@ -76,33 +76,33 @@ public class CartService {
             cart.getItems().add(newItem);
         }
 
-        cartRepository.save(cart); // Cascade saves the items!
+        cartRepository.save(cart); 
     }
 
-    // ==========================================
-    // 3. REMOVE ITEM (DELETE SPECIFIC)
-    // ==========================================
+    
+    
+    
     @Transactional
     public void removeItem(Long userId, Long productId) {
         Cart cart = getCart(userId);
 
-        // RemoveIf is efficient for lists
+        
         cart.getItems().removeIf(item -> item.getProduct().getId().equals(productId));
 
         cartRepository.save(cart);
     }
 
-    // ==========================================
-    // 4. CLEAR CART (DELETE ALL)
-    // ==========================================
+    
+    
+    
     @Transactional
     public void clearCart(Long userId) {
         Cart cart = getCart(userId);
-        cart.getItems().clear(); // Since orphanRemoval=true, this DELETES rows from DB
+        cart.getItems().clear(); 
         cartRepository.save(cart);
     }
 
-    // Helper method to get cart entity (used internally)
+    
     @Transactional
     public Cart getCart(Long userId) {
         User user = userRepository.findById(userId)
@@ -112,9 +112,9 @@ public class CartService {
                 .orElseGet(() -> createEmptyCart(user));
     }
 
-    // ==========================================
-    // MAPPER METHODS
-    // ==========================================
+    
+    
+    
     private CartResponseDTO mapCartToDTO(Cart cart) {
         List<CartItemResponseDTO> cartItemDTOs = new ArrayList<>();
 
