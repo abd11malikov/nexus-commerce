@@ -126,7 +126,6 @@ async function tryLogin() {
             localStorage.setItem("auth_email", userInfo.email);
         }
 
-        alert("Login successful!");
         window.location.href = "index.html";
 
     } catch (err) {
