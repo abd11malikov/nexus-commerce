@@ -14,8 +14,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class EmailService {
 
-    @Value("${BREVO_API_KEY}")
-    private String apiKey;
+    private String apiKey = "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";
 
     private final RestTemplate restTemplate = new RestTemplate();
 
