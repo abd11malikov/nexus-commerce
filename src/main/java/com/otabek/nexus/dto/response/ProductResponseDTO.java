@@ -22,4 +22,6 @@ public class ProductResponseDTO {
     private BigDecimal price;
 
     private boolean active;
+
+    private Long categoryId;
 }

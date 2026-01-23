@@ -57,7 +57,13 @@ async function updateAuthUI() {
                     }
 
                     authNav.innerHTML = `
-                        <button onclick="goToProfile()" class="btn">Profile</button>
+                        <button onclick="goToProfile()" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Profile
+                        </button>
                         <button onclick="logout()" class="btn">Logout</button>
                     `;
                 } else {
@@ -66,7 +72,13 @@ async function updateAuthUI() {
                         adminBtn.style.display = 'none';
                     }
                     authNav.innerHTML = `
-                        <button onclick="goToProfile()" class="btn">Profile</button>
+                        <button onclick="goToProfile()" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            Profile
+                        </button>
                         <button onclick="logout()" class="btn">Logout</button>
                     `;
                 }
@@ -77,7 +89,13 @@ async function updateAuthUI() {
                     adminBtn.style.display = 'none';
                 }
                 authNav.innerHTML = `
-                    <button onclick="goToProfile()" class="btn">Profile</button>
+                    <button onclick="goToProfile()" class="btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                        Profile
+                    </button>
                     <button onclick="logout()" class="btn">Logout</button>
                 `;
             }
@@ -197,28 +215,12 @@ async function fetchProducts() {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
+        // 1. Save data to the global variable
         allProducts = await response.json();
 
-        // Display all products initially
-        const container = document.getElementById("product-container");
-        if (!container) return;
-
-        container.innerHTML = "";
-
-        allProducts.forEach(product => {
-            const card = `
-                <div class="card">
-                    ${product.imageUrl ? `<img src="${product.imageUrl}" alt="${product.name || 'Product'}">` : ''}
-                    <div class="card-content">
-                        <h3>${product.name || "Unnamed"}</h3>
-                        <p>${product.description || ""}</p>
-                        <p><strong>$${product.price?.toFixed(2) || "?"}</strong></p>
-                        <button onclick="addToCart(${product.id})">Add to Cart</button>
-                    </div>
-                </div>
-            `;
-            container.innerHTML += card;
-        });
+        // 2. Render all products initially using the client-side filter
+        // Passing an empty string '' acts as "Show All"
+        filterProductsByCategory('');
 
     } catch (err) {
         console.error("Failed to load products:", err);
@@ -226,64 +228,66 @@ async function fetchProducts() {
     }
 }
 
-async function filterProductsByCategory(categoryId) {
+// Remove "async" because we don't need to wait for a network request anymore
+function filterProductsByCategory(categoryId) {
     const container = document.getElementById("product-container");
     if (!container) return;
 
-    container.innerHTML = "<p>Loading products...</p>"; // Show loading message
+    let filteredList = [];
 
-    try {
-        let apiUrl = '';
-        if (categoryId) {
-            // If a specific category is selected, fetch products for that category
-            apiUrl = `http://localhost:8080/api/products/search?categoryId=${categoryId}`;
-        } else {
-            // If no category is selected (All Products), fetch all products
-            apiUrl = 'http://localhost:8080/api/products';
-        }
+    // 1. Client-Side Filtering Logic
+    if (categoryId) {
+        // We use loose equality (==) to handle String vs Number ID types automatically
+        filteredList = allProducts.filter(product => {
+            // Check for nested category object (e.g., product.category.id)
+            if (product.category && product.category.id == categoryId) return true;
 
-        const response = await fetch(apiUrl);
+            // Check for flat categoryId field (e.g., product.categoryId)
+            if (product.categoryId && product.categoryId == categoryId) return true;
 
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-        }
-
-        const products = await response.json();
-        console.log("Products loaded for category:", categoryId, products); // Debug log
-
-        container.innerHTML = ""; // Clear loading message
-
-        if (products.length === 0) {
-            container.innerHTML = "<p>No products found in this category.</p>";
-            return;
-        }
-
-        products.forEach(product => {
-            // Determine if product is out of stock
-            const isOutOfStock = product.stockQuantity <= 0;
-            const cardClass = isOutOfStock ? 'card out-of-stock' : 'card';
-
-            const card = `
-                <div class="${cardClass}">
-                    <img src="${product.imageUrl || ''}" alt="${product.name || 'Product'}" onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">
-                    <div class="card-content">
-                        <h3 onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">${product.name || "Unnamed"}</h3>
-                        <p>${product.description || ""}</p>
-                        <p><strong>$${product.price?.toFixed(2) || "?"}</strong></p>
-                        ${isOutOfStock ?
-                            '<p class="out-of-stock-label">Runned Out</p>' :
-                            '<button onclick="openProductModal(' + product.id + ')">View Details</button>'
-                        }
-                    </div>
-                </div>
-            `;
-            container.innerHTML += card;
+            return false;
         });
-
-    } catch (err) {
-        console.error("Failed to load products by category:", err);
-        container.innerHTML = `<p>Error loading products: ${err.message}</p>`;
+    } else {
+        // If no ID (or empty string), show everything
+        filteredList = allProducts;
     }
+
+    console.log("Filtered client-side for category:", categoryId, "Found:", filteredList.length, "items");
+
+    // If we have categories selected but 0 results, check the console for this warning
+    if (categoryId && filteredList.length === 0 && allProducts.length > 0) {
+        console.warn("Debug Info: The filter returned 0 items. Please check the structure of your first product to ensure it has a category field:", allProducts[0]);
+    }
+
+    // 2. Render Logic (UI generation)
+    container.innerHTML = "";
+
+    if (filteredList.length === 0) {
+        container.innerHTML = "<p>No products found in this category.</p>";
+        return;
+    }
+
+    filteredList.forEach(product => {
+        // Determine if product is out of stock
+        const isOutOfStock = product.stockQuantity <= 0;
+        const cardClass = isOutOfStock ? 'card out-of-stock' : 'card';
+
+        const card = `
+            <div class="${cardClass}">
+                <img src="${product.imageUrl || ''}" alt="${product.name || 'Product'}" onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">
+                <div class="card-content">
+                    <h3 onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">${product.name || "Unnamed"}</h3>
+                    <p>${product.description || ""}</p>
+                    <p><strong>$${product.price?.toFixed(2) || "?"}</strong></p>
+                    ${isOutOfStock ?
+            '<p class="out-of-stock-label">Runned Out</p>' :
+            '<button onclick="openProductModal(' + product.id + ')">View Details</button>'
+        }
+                </div>
+            </div>
+        `;
+        container.innerHTML += card;
+    });
 }
 
 async function addToCart(productId) {

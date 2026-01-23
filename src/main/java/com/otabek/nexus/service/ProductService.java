@@ -87,6 +87,7 @@ public class ProductService {
                 .stockQuantity(product.getStockQuantity())
                 .imageUrl(product.getImageUrl())
                 .active(product.isActive())
+                .categoryId(product.getCategory().getId())
                 .build();
     }
 
