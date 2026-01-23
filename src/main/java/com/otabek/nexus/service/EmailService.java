@@ -23,7 +23,7 @@ public class EmailService {
         String url = "https://api.brevo.com/v3/smtp/email";
 
         Map<String, Object> requestBody = Map.of(
-                "sender", Map.of("name", "Nexus Shop", "email", "jasonalexamiller@gmail.com"),
+                "sender", Map.of("name", "Nexus Shop", "email", "otabekabd11malikov@gmail.com"),
                 "to", List.of(Map.of("email", toEmail, "name", username)),
                 "subject", "📦 Your Order #" + orderId + " is Delivered!",
                 "htmlContent", "<h1>Hi " + username + "!</h1><p>Your order is delivered! Thank you for choosing us)</p>"
