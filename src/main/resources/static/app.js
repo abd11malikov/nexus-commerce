@@ -36,7 +36,7 @@ async function updateAuthUI() {
         if (token && username) {
             // Check if user is admin
             try {
-                const userResponse = await fetch('http://localhost:8080/api/users/me', {
+                const userResponse = await fetch('/api/users/me', {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -64,7 +64,13 @@ async function updateAuthUI() {
                             </svg>
                             Profile
                         </button>
-                        <button onclick="logout()" class="btn">Logout</button>
+                        <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </button>
                     `;
                 } else {
                     // If we can't get user info, assume regular user
@@ -79,7 +85,13 @@ async function updateAuthUI() {
                             </svg>
                             Profile
                         </button>
-                        <button onclick="logout()" class="btn">Logout</button>
+                        <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                <polyline points="16 17 21 12 16 7"></polyline>
+                                <line x1="21" y1="12" x2="9" y2="12"></line>
+                            </svg>
+                        </button>
                     `;
                 }
             } catch (err) {
@@ -96,7 +108,13 @@ async function updateAuthUI() {
                         </svg>
                         Profile
                     </button>
-                    <button onclick="logout()" class="btn">Logout</button>
+                    <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                        </svg>
+                    </button>
                 `;
             }
         } else {
@@ -124,7 +142,7 @@ async function tryLogin() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/auth/login', {
+        const response = await fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })
@@ -155,7 +173,7 @@ let allProducts = []; // Store all products globally to enable filtering
 
 async function fetchCategories() {
     try {
-        const response = await fetch('http://localhost:8080/api/categories');
+        const response = await fetch('/api/categories');
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -182,7 +200,6 @@ async function fetchCategories() {
         categoryHtml += '</ul>';
         categoriesList.innerHTML = categoryHtml;
 
-        // Add event listeners to category items after DOM is updated
         setTimeout(() => {
             document.querySelectorAll('.categories-list li').forEach(item => {
                 item.addEventListener('click', function() {
@@ -209,17 +226,14 @@ async function fetchCategories() {
 
 async function fetchProducts() {
     try {
-        const response = await fetch('http://localhost:8080/api/products');
+        const response = await fetch('/api/products');
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
-        // 1. Save data to the global variable
         allProducts = await response.json();
 
-        // 2. Render all products initially using the client-side filter
-        // Passing an empty string '' acts as "Show All"
         filterProductsByCategory('');
 
     } catch (err) {
@@ -228,38 +242,30 @@ async function fetchProducts() {
     }
 }
 
-// Remove "async" because we don't need to wait for a network request anymore
 function filterProductsByCategory(categoryId) {
     const container = document.getElementById("product-container");
     if (!container) return;
 
     let filteredList = [];
 
-    // 1. Client-Side Filtering Logic
     if (categoryId) {
-        // We use loose equality (==) to handle String vs Number ID types automatically
         filteredList = allProducts.filter(product => {
-            // Check for nested category object (e.g., product.category.id)
             if (product.category && product.category.id == categoryId) return true;
 
-            // Check for flat categoryId field (e.g., product.categoryId)
             if (product.categoryId && product.categoryId == categoryId) return true;
 
             return false;
         });
     } else {
-        // If no ID (or empty string), show everything
         filteredList = allProducts;
     }
 
     console.log("Filtered client-side for category:", categoryId, "Found:", filteredList.length, "items");
 
-    // If we have categories selected but 0 results, check the console for this warning
     if (categoryId && filteredList.length === 0 && allProducts.length > 0) {
         console.warn("Debug Info: The filter returned 0 items. Please check the structure of your first product to ensure it has a category field:", allProducts[0]);
     }
 
-    // 2. Render Logic (UI generation)
     container.innerHTML = "";
 
     if (filteredList.length === 0) {
@@ -268,7 +274,6 @@ function filterProductsByCategory(categoryId) {
     }
 
     filteredList.forEach(product => {
-        // Determine if product is out of stock
         const isOutOfStock = product.stockQuantity <= 0;
         const cardClass = isOutOfStock ? 'card out-of-stock' : 'card';
 
@@ -276,9 +281,9 @@ function filterProductsByCategory(categoryId) {
             <div class="${cardClass}">
                 <img src="${product.imageUrl || ''}" alt="${product.name || 'Product'}" onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">
                 <div class="card-content">
+                    <p><strong>$${product.price?.toFixed(2) || "?"}</strong></p>
                     <h3 onclick="openProductModal(${product.id})" style="cursor: ${isOutOfStock ? 'not-allowed' : 'pointer'};">${product.name || "Unnamed"}</h3>
                     <p>${product.description || ""}</p>
-                    <p><strong>$${product.price?.toFixed(2) || "?"}</strong></p>
                     ${isOutOfStock ?
             '<p class="out-of-stock-label">Runned Out</p>' :
             '<button onclick="openProductModal(' + product.id + ')">View Details</button>'
@@ -291,10 +296,7 @@ function filterProductsByCategory(categoryId) {
 }
 
 async function addToCart(productId) {
-    // This function is deprecated. Use the product modal instead.
-    // Opening the product modal to allow users to select quantity
     openProductModal(productId);
-    // Update the cart count when the modal opens
     setTimeout(updateCartCount, 1000); // Delay to allow modal to load
 }
 
@@ -307,7 +309,7 @@ async function getUserInfo() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/users/${username}`, {
+        const response = await fetch(`/api/users/${username}`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -330,7 +332,7 @@ async function getUserInfo() {
 // Load product details for the product detail page
 async function loadProductDetail(productId) {
     try {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+        const response = await fetch(`/api/products/${productId}`);
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -408,7 +410,7 @@ function updateStockWarning(maxStock) {
 // Open product modal
 async function openProductModal(productId) {
     try {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`);
+        const response = await fetch(`/api/products/${productId}`);
 
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -544,7 +546,7 @@ async function addModalToCart() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/cart/add', {
+        const response = await fetch('/api/cart/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -597,7 +599,7 @@ async function addToCartFromDetail() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/cart/add', {
+        const response = await fetch('/api/cart/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -643,7 +645,7 @@ async function openCartModal() {
     try {
         console.log("Fetching cart with token:", token); // Debug log
 
-        const response = await fetch('http://localhost:8080/api/cart', {
+        const response = await fetch('/api/cart', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -751,7 +753,7 @@ async function updateCartItemQuantity(productId, newQuantity) {
     try {
         // To update quantity, we need to remove the item and add it back with new quantity
         // First, get product details to validate stock
-        const productResponse = await fetch(`http://localhost:8080/api/products/${productId}`);
+        const productResponse = await fetch(`/api/products/${productId}`);
         if (!productResponse.ok) {
             throw new Error(`Failed to get product details: ${productResponse.statusText}`);
         }
@@ -768,7 +770,7 @@ async function updateCartItemQuantity(productId, newQuantity) {
         await removeCartItem(productId);
 
         // Then add it back with the new quantity
-        const response = await fetch('http://localhost:8080/api/cart/add', {
+        const response = await fetch('/api/cart/add', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -809,7 +811,7 @@ async function removeCartItem(productId) {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/cart/item/${productId}`, {
+        const response = await fetch(`/api/cart/item/${productId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -842,7 +844,7 @@ async function updateCartCount() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/cart', {
+        const response = await fetch('/api/cart', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -892,7 +894,7 @@ async function checkAdminAccess() {
 
     // Verify user is admin
     try {
-        const userResponse = await fetch('http://localhost:8080/api/users/me', {
+        const userResponse = await fetch('/api/users/me', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1072,7 +1074,7 @@ function hideCurrentForm() {
 
 async function loadCategoriesForForm(selectId) {
     try {
-        const response = await fetch('http://localhost:8080/api/categories');
+        const response = await fetch('/api/categories');
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -1096,7 +1098,7 @@ async function loadCategoriesForForm(selectId) {
 
 async function loadProductsForSelection(selectId) {
     try {
-        const response = await fetch('http://localhost:8080/api/products');
+        const response = await fetch('/api/products');
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
@@ -1132,7 +1134,7 @@ async function loadOrderDetailsForUpdate() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/orders/${orderId}`, {
+        const response = await fetch(`/api/orders/${orderId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1157,7 +1159,7 @@ async function loadOrderDetailsForUpdate() {
 async function loadOrdersForSelection(selectId) {
     try {
         const token = localStorage.getItem("auth_token");
-        const response = await fetch('http://localhost:8080/api/orders', {
+        const response = await fetch('/api/orders', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1194,7 +1196,7 @@ async function loadProductDetailsForUpdate() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+        const response = await fetch(`/api/products/${productId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
@@ -1245,7 +1247,7 @@ async function addProduct() {
     }
 
     try {
-        const response = await fetch('http://localhost:8080/api/products', {
+        const response = await fetch('/api/products', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1299,7 +1301,7 @@ async function updateProduct() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/products/${productId}`, {
+        const response = await fetch(`/api/products/${productId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -1348,7 +1350,7 @@ async function updateOrderStatus() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/orders/${orderId}`, {
+        const response = await fetch(`/api/orders/${orderId}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -1388,7 +1390,7 @@ async function loadCartForCheckout() {
 
     try {
         // Load cart items
-        const cartResponse = await fetch('http://localhost:8080/api/cart', {
+        const cartResponse = await fetch('/api/cart', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1406,7 +1408,7 @@ async function loadCartForCheckout() {
         displayCartItemsForCheckout(cart);
 
         // Load user information
-        const userResponse = await fetch('http://localhost:8080/api/users/me', {
+        const userResponse = await fetch('/api/users/me', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1500,7 +1502,7 @@ async function handleCheckoutSubmit(event) {
 
     try {
         // Get user information
-        const userResponse = await fetch('http://localhost:8080/api/cart', {
+        const userResponse = await fetch('/api/cart', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1517,7 +1519,7 @@ async function handleCheckoutSubmit(event) {
 
         // Place the order using the existing order API
         // Note: userId is not needed in the body as the backend extracts it from the authentication context
-        const response = await fetch('http://localhost:8080/api/orders/create', {
+        const response = await fetch('/api/orders/create', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1541,7 +1543,7 @@ async function handleCheckoutSubmit(event) {
         if (response.ok) {
             alert("Order placed successfully!");
             // Clear the cart after successful order
-            await fetch('http://localhost:8080/api/cart/clear', {
+            await fetch('/api/cart/clear', {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -1572,7 +1574,7 @@ async function loadProfile() {
 
     try {
         // Load user information
-        const userResponse = await fetch('http://localhost:8080/api/users/me', {
+        const userResponse = await fetch('/api/users/me', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -1588,7 +1590,7 @@ async function loadProfile() {
         displayUserInfo(user);
 
         // Load user's order history
-        const ordersResponse = await fetch('http://localhost:8080/api/orders/user?email=' + user.email, {
+        const ordersResponse = await fetch('/api/orders/user?email=' + user.email, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

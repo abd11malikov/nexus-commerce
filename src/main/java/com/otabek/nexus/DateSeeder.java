@@ -23,7 +23,9 @@ public class DateSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userService.getAll().isEmpty()){
+
+        if(userService.getAll().isEmpty()) {
+
             UserRequestDTO userReq1 = UserRequestDTO.builder()
                     .firstName("Otabek")
                     .lastName("Abdumalikov")
@@ -49,11 +51,11 @@ public class DateSeeder implements CommandLineRunner {
                     .password("ozodbek2007").build();
 
 
-
             userService.create(userReq1);
             userService.create(userReq2);
             userService.create(userReq3);
             userService.promoteToAdmin(1);
+
 
             CategoryRequestDTO electronicsCategory = new CategoryRequestDTO();
             electronicsCategory.setName("Electronics");
@@ -76,6 +78,209 @@ public class DateSeeder implements CommandLineRunner {
             CategoryResponseDTO sportsCat = categoryService.create(sportsCategory);
 
             ProductRequestDTO p1 = new ProductRequestDTO(
+                    "Gaming Keyboard",
+                    "Mechanical gaming keyboard with RGB lighting",
+                    40,
+                    "https://images.unsplash.com/photo-1547394766-2f9c79cd725c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("89.99"),
+                    1L  // Electronics category
+            );
+
+            ProductRequestDTO p2 = new ProductRequestDTO(
+                    "Running Shorts",
+                    "Breathable moisture-wicking running shorts",
+                    75,
+                    "https://images.unsplash.com/photo-1591233799362-06e2e08a2f1d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("34.99"),
+                    2L  // Clothing category
+            );
+
+            ProductRequestDTO p3 = new ProductRequestDTO(
+                    "Cooking Recipe Book",
+                    "Collection of gourmet recipes from world cuisines",
+                    50,
+                    "https://images.unsplash.com/photo-1596276020080-6fff0c4bbda0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("22.99"),
+                    3L  // Books category
+            );
+
+            ProductRequestDTO p4 = new ProductRequestDTO(
+                    "Outdoor Grill",
+                    "Gas grill with multiple burners and side shelves",
+                    20,
+                    "https://images.unsplash.com/photo-1604671801908-6f0c6a092c05?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("349.99"),
+                    4L  // Home & Garden category
+            );
+
+            ProductRequestDTO p5 = new ProductRequestDTO(
+                    "Basketball",
+                    "Official size basketball for indoor/outdoor play",
+                    60,
+                    "https://images.unsplash.com/photo-1546519638-68e109498ffc?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("29.95"),
+                    5L  // Sports category
+            );
+
+            ProductRequestDTO p6 = new ProductRequestDTO(
+                    "Digital Camera",
+                    "Mirrorless camera with 4K video recording",
+                    35,
+                    "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("799.99"),
+                    1L  // Electronics category
+            );
+
+            ProductRequestDTO p7 = new ProductRequestDTO(
+                    "Denim Jeans",
+                    "Classic fit denim jeans for everyday wear",
+                    85,
+                    "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("59.99"),
+                    2L  // Clothing category
+            );
+
+            ProductRequestDTO p8 = new ProductRequestDTO(
+                    "Self-Help Book",
+                    "Guide to personal development and success",
+                    90,
+                    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80",
+                    new BigDecimal("18.99"),
+                    3L  // Books category
+            );
+
+            ProductRequestDTO p9 = new ProductRequestDTO(
+                    "Pressure Cooker",
+                    "Multi-functional electric pressure cooker",
+                    45,
+                    "https://images.unsplash.com/photo-1605276374104-dee02a9f8539?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("129.99"),
+                    4L  // Home & Garden category
+            );
+
+            ProductRequestDTO p10 = new ProductRequestDTO(
+                    "Tennis Racket",
+                    "Professional tennis racket with grip tape",
+                    30,
+                    "https://images.unsplash.com/photo-1548604869-643fcbd70b63?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("149.95"),
+                    5L  // Sports category
+            );
+
+            ProductRequestDTO p11 = new ProductRequestDTO(
+                    "Tablet Computer",
+                    "10-inch tablet with stylus and high resolution display",
+                    25,
+                    "https://images.unsplash.com/photo-1606220588911-4a4260c1d7f1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("449.99"),
+                    1L  // Electronics category
+            );
+
+            ProductRequestDTO p12 = new ProductRequestDTO(
+                    "Winter Gloves",
+                    "Insulated waterproof gloves for cold weather",
+                    100,
+                    "https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("24.99"),
+                    2L  // Clothing category
+            );
+
+            ProductRequestDTO p13 = new ProductRequestDTO(
+                    "Science Fiction Novel",
+                    "Best-selling sci-fi adventure novel",
+                    70,
+                    "https://images.unsplash.com/photo-1589998059171-988d887df646?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("16.99"),
+                    3L  // Books category
+            );
+
+            ProductRequestDTO p14 = new ProductRequestDTO(
+                    "Lawn Mower",
+                    "Self-propelled gas lawn mower with bag",
+                    15,
+                    "https://images.unsplash.com/photo-1598968476130-7ae442459230?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("399.99"),
+                    4L  // Home & Garden category
+            );
+
+            ProductRequestDTO p15 = new ProductRequestDTO(
+                    "Soccer Ball",
+                    "Official FIFA-approved soccer ball",
+                    80,
+                    "https://images.unsplash.com/photo-1519858831317-4a3873c6caf9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("27.99"),
+                    5L  // Sports category
+            );
+
+            ProductRequestDTO p16 = new ProductRequestDTO(
+                    "Smart Watch",
+                    "Fitness tracker with heart rate monitor and GPS",
+                    45,
+                    "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1199&q=80",
+                    new BigDecimal("199.99"),
+                    1L  // Electronics category
+            );
+
+            ProductRequestDTO p17 = new ProductRequestDTO(
+                    "Summer Dress",
+                    "Lightweight floral summer dress",
+                    65,
+                    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("42.99"),
+                    2L  // Clothing category
+            );
+
+            ProductRequestDTO p18 = new ProductRequestDTO(
+                    "Biography Book",
+                    "Inspirational biography of a famous leader",
+                    55,
+                    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1176&q=80",
+                    new BigDecimal("21.99"),
+                    3L  // Books category
+            );
+
+            ProductRequestDTO p19 = new ProductRequestDTO(
+                    "Garden Hose",
+                    "Expandable garden hose with spray nozzle",
+                    120,
+                    "https://images.unsplash.com/photo-1581092580497-e0d23cbdf021?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("29.99"),
+                    4L  // Home & Garden category
+            );
+
+            ProductRequestDTO p20 = new ProductRequestDTO(
+                    "Yoga Block",
+                    "Eco-friendly cork yoga block for support",
+                    95,
+                    "https://images.unsplash.com/photo-1588144568708-8b6e62b7c7c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80",
+                    new BigDecimal("14.99"),
+                    5L  // Sports category
+            );
+
+            // Create all 20 new products
+            productService.create(p1);
+            productService.create(p2);
+            productService.create(p3);
+            productService.create(p4);
+            productService.create(p5);
+            productService.create(p6);
+            productService.create(p7);
+            productService.create(p8);
+            productService.create(p9);
+            productService.create(p10);
+            productService.create(p11);
+            productService.create(p12);
+            productService.create(p13);
+            productService.create(p14);
+            productService.create(p15);
+            productService.create(p16);
+            productService.create(p17);
+            productService.create(p18);
+            productService.create(p19);
+            productService.create(p20);
+
+
+            ProductRequestDTO p21 = new ProductRequestDTO(
                     "MacBook Pro M3",
                     "Super fast laptop with M3 chip",
                     10,
@@ -84,7 +289,7 @@ public class DateSeeder implements CommandLineRunner {
                     electronicsCat.getId()
             );
 
-            ProductRequestDTO p2 = new ProductRequestDTO(
+            ProductRequestDTO p22 = new ProductRequestDTO(
                     "Wireless Mouse",
                     "Ergonomic wireless mouse with long battery life",
                     50,
@@ -93,7 +298,7 @@ public class DateSeeder implements CommandLineRunner {
                     electronicsCat.getId()
             );
 
-            ProductRequestDTO p3 = new ProductRequestDTO(
+            ProductRequestDTO p23 = new ProductRequestDTO(
                     "Smartphone",
                     "Latest model smartphone with advanced features",
                     25,
@@ -102,7 +307,7 @@ public class DateSeeder implements CommandLineRunner {
                     electronicsCat.getId()
             );
 
-            ProductRequestDTO p4 = new ProductRequestDTO(
+            ProductRequestDTO p24 = new ProductRequestDTO(
                     "Designer T-Shirt",
                     "Comfortable cotton t-shirt with unique design",
                     100,
@@ -111,7 +316,7 @@ public class DateSeeder implements CommandLineRunner {
                     clothingCat.getId()
             );
 
-            ProductRequestDTO p5 = new ProductRequestDTO(
+            ProductRequestDTO p25 = new ProductRequestDTO(
                     "Winter Jacket",
                     "Warm jacket for cold weather",
                     40,
@@ -120,7 +325,7 @@ public class DateSeeder implements CommandLineRunner {
                     clothingCat.getId()
             );
 
-            ProductRequestDTO p6 = new ProductRequestDTO(
+            ProductRequestDTO p26 = new ProductRequestDTO(
                     "Bestselling Novel",
                     "Award-winning fiction novel",
                     75,
@@ -129,7 +334,7 @@ public class DateSeeder implements CommandLineRunner {
                     booksCat.getId()
             );
 
-            ProductRequestDTO p7 = new ProductRequestDTO(
+            ProductRequestDTO p27 = new ProductRequestDTO(
                     "Indoor Plant",
                     "Low maintenance plant for your home",
                     60,
@@ -138,7 +343,7 @@ public class DateSeeder implements CommandLineRunner {
                     homeGardenCat.getId()
             );
 
-            ProductRequestDTO p8 = new ProductRequestDTO(
+            ProductRequestDTO p28 = new ProductRequestDTO(
                     "Fitness Tracker",
                     "Track your workouts and health metrics",
                     85,
@@ -147,35 +352,16 @@ public class DateSeeder implements CommandLineRunner {
                     sportsCat.getId()
             );
 
-            // Create orders for the first user
-            Long prod1Id = productService.create(p1).getId();
-            Long prod2Id = productService.create(p2).getId();
-            Long prod3Id = productService.create(p3).getId();
-            Long prod4Id = productService.create(p4).getId();
-            Long prod5Id = productService.create(p5).getId();
-            Long prod6Id = productService.create(p6).getId();
-            Long prod7Id = productService.create(p7).getId();
-            Long prod8Id = productService.create(p8).getId();
+            productService.create(p21);
+            productService.create(p22);
+            productService.create(p23);
+            productService.create(p24);
+            productService.create(p25);
+            productService.create(p26);
+            productService.create(p27);
+            productService.create(p28);
 
-            OrderRequestDTO order = new OrderRequestDTO();
-            order.setUserId(1);
 
-            OrderItemRequestDTO item1 = new OrderItemRequestDTO();
-            item1.setProductId(prod1Id);
-            item1.setQuantity(1);
-
-            OrderItemRequestDTO item2 = new OrderItemRequestDTO();
-            item2.setProductId(prod2Id);
-            item2.setQuantity(2);
-
-            OrderItemRequestDTO item3 = new OrderItemRequestDTO();
-            item3.setProductId(prod4Id);
-            item3.setQuantity(3);
-
-            order.setOrderItems(List.of(item1, item2, item3));
-
-            orderService.placeOrder(userReq1.getEmail(), order);
         }
-
     }
 }

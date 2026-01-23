@@ -6,4 +6,3 @@ out/
 target/
 *.class
 .DS_Store
-application.properties
