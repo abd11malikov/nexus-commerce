@@ -10,8 +10,16 @@
 </head>
 <body>
 <nav>
-    <div id="nav-right">
-        <div id="cart-icon" onclick="openCartModal()" style="cursor: pointer; position: relative; margin-right: 20px;">
+    <div id="nav-left">
+        <h1>Nexus Commerce</h1>
+        <button id="mobile-menu-toggle" class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <div id="cart-icon" onclick="openCartModal()" style="cursor: pointer; position: relative; margin-left: 10px;">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -19,11 +27,13 @@
             </svg>
             <span id="cart-count" class="cart-count-badge">0</span>
         </div>
+    </div>
+    <div id="nav-right" class="collapsed">
         <div id="admin-panel-btn" style="margin-right: 10px; display: none;">
             <a href="admin.html" class="btn" style="background-color: #f97316; text-decoration: none;">Admin Panel</a>
         </div>
         <div id="auth-nav">
-            
+
         </div>
     </div>
 </nav>
@@ -35,6 +45,32 @@
         </div>
     </aside>
     <main>
+        <!-- Search and Sort Controls -->
+        <div id="search-sort-container" class="search-sort-container">
+            <div id="search-container" class="search-container">
+                <input type="text" id="search-input" placeholder="Search products..." class="search-input">
+                <button id="search-btn" class="search-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div id="sort-container" class="sort-container">
+                <select id="sort-select" class="sort-select">
+                    <option value="">Sort by...</option>
+                    <option value="name-asc">Name A-Z</option>
+                    <option value="name-desc">Name Z-A</option>
+                    <option value="price-asc">Price Low-High</option>
+                    <option value="price-desc">Price High-Low</option>
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                </select>
+            </div>
+        </div>
+
         <div id="product-container">
             <p>Loading products from Java Backend...</p>
         </div>

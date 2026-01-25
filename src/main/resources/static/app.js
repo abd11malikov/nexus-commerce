@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchCategories();
         fetchProducts();
         updateAuthUI();
+
+        // Add event listeners for search and sort
+        setupSearchAndSortListeners();
     } else if (path.includes("login.html")) {
         document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -22,6 +25,92 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = 'index.html';
         }
         updateAuthUI();
+    } else if (path.includes("admin.html")) {
+        // Check if user is admin and load admin functionality
+        checkAdminAccess();
+        updateAuthUI();
+    }
+});
+
+// Setup event listeners for search and sort functionality
+function setupSearchAndSortListeners() {
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const sortSelect = document.getElementById('sort-select');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            // Re-filter products when search input changes
+            const activeCategoryId = document.querySelector('.categories-list .active')?.getAttribute('data-category-id') || '';
+            filterProductsByCategory(activeCategoryId);
+        });
+    }
+
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function() {
+            // Trigger search when search button is clicked
+            const activeCategoryId = document.querySelector('.categories-list .active')?.getAttribute('data-category-id') || '';
+            filterProductsByCategory(activeCategoryId);
+        });
+    }
+
+    if (sortSelect) {
+        sortSelect.addEventListener('change', function() {
+            // Re-filter products when sort option changes
+            const activeCategoryId = document.querySelector('.categories-list .active')?.getAttribute('data-category-id') || '';
+            filterProductsByCategory(activeCategoryId);
+        });
+    }
+}
+
+// Toggle mobile menu
+function toggleMobileMenu() {
+    const navRight = document.getElementById('nav-right');
+    if (navRight) {
+        navRight.classList.toggle('collapsed');
+
+        // Change the hamburger icon to close icon when menu is open
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        if (toggleBtn) {
+            const icon = toggleBtn.querySelector('svg');
+            if (navRight.classList.contains('collapsed')) {
+                // Menu is closed, show hamburger icon
+                icon.innerHTML = `
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                `;
+            } else {
+                // Menu is open, show close icon
+                icon.innerHTML = `
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                `;
+            }
+        }
+    }
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const navRight = document.getElementById('nav-right');
+    const toggleBtn = document.getElementById('mobile-menu-toggle');
+
+    if (navRight && toggleBtn) {
+        // Check if the click is outside the nav-right and toggle button
+        if (!navRight.contains(event.target) &&
+            !toggleBtn.contains(event.target) &&
+            !navRight.classList.contains('collapsed')) {
+            // Close the menu
+            navRight.classList.add('collapsed');
+            // Reset the icon to hamburger
+            const icon = toggleBtn.querySelector('svg');
+            icon.innerHTML = `
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            `;
+        }
     }
 });
 
@@ -57,14 +146,14 @@ async function updateAuthUI() {
                     }
 
                     authNav.innerHTML = `
-                        <button onclick="goToProfile()" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <button onclick="goToProfile()" class="btn btn-with-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                             Profile
                         </button>
-                        <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                        <button onclick="logout()" class="btn btn-with-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -78,14 +167,14 @@ async function updateAuthUI() {
                         adminBtn.style.display = 'none';
                     }
                     authNav.innerHTML = `
-                        <button onclick="goToProfile()" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <button onclick="goToProfile()" class="btn btn-with-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
                             Profile
                         </button>
-                        <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                        <button onclick="logout()" class="btn btn-with-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -108,7 +197,7 @@ async function updateAuthUI() {
                         </svg>
                         Profile
                     </button>
-                    <button onclick="logout()" class="btn" style="background-color: #ef4444 !important;">
+                    <button onclick="logout()" class="btn">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                             <polyline points="16 17 21 12 16 7"></polyline>
@@ -266,10 +355,23 @@ function filterProductsByCategory(categoryId) {
         console.warn("Debug Info: The filter returned 0 items. Please check the structure of your first product to ensure it has a category field:", allProducts[0]);
     }
 
+    // Apply search filter if there's a search term
+    const searchTerm = document.getElementById('search-input')?.value?.toLowerCase().trim() || '';
+    if (searchTerm) {
+        filteredList = filteredList.filter(product =>
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.description.toLowerCase().includes(searchTerm)
+        );
+    }
+
+    // Apply sorting
+    const sortValue = document.getElementById('sort-select')?.value || '';
+    filteredList = applySorting(filteredList, sortValue);
+
     container.innerHTML = "";
 
     if (filteredList.length === 0) {
-        container.innerHTML = "<p>No products found in this category.</p>";
+        container.innerHTML = "<p>No products found.</p>";
         return;
     }
 
@@ -293,6 +395,28 @@ function filterProductsByCategory(categoryId) {
         `;
         container.innerHTML += card;
     });
+}
+
+// Function to apply sorting to the product list
+function applySorting(products, sortValue) {
+    switch(sortValue) {
+        case 'name-asc':
+            return [...products].sort((a, b) => a.name.localeCompare(b.name));
+        case 'name-desc':
+            return [...products].sort((a, b) => b.name.localeCompare(a.name));
+        case 'price-asc':
+            return [...products].sort((a, b) => (a.price || 0) - (b.price || 0));
+        case 'price-desc':
+            return [...products].sort((a, b) => (b.price || 0) - (a.price || 0));
+        case 'date-desc':
+            // Assuming products have a createdAt field or similar
+            return [...products].sort((a, b) => new Date(b.createdAt || b.id) - new Date(a.createdAt || a.id));
+        case 'date-asc':
+            // Assuming products have a createdAt field or similar
+            return [...products].sort((a, b) => new Date(a.createdAt || a.id) - new Date(b.createdAt || b.id));
+        default:
+            return products;
+    }
 }
 
 async function addToCart(productId) {
@@ -1716,6 +1840,9 @@ document.addEventListener("DOMContentLoaded", () => {
         fetchCategories();
         fetchProducts();
         updateAuthUI();
+
+        // Add event listeners for search and sort
+        setupSearchAndSortListeners();
     } else if (path.includes("login.html")) {
         document.getElementById('loginForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
