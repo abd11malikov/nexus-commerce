@@ -1,5 +1,6 @@
 package com.otabek.nexus.service;
 
+import com.otabek.nexus.dto.request.RegisterRequest;
 import com.otabek.nexus.dto.request.UserRequestDTO;
 import com.otabek.nexus.dto.response.UserResponseDTO;
 import com.otabek.nexus.entity.User;
@@ -15,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +39,92 @@ public class UserService implements UserDetailsService {
         User user = mapToEntity(requestDTO);
         User savedUser = userRepository.save(user);
         return mapToResponse(savedUser);
+    }
+
+    /**
+     * Simplified self-service sign-up: name + email + password (twice).
+     * The email doubles as the login username; phone is left blank.
+     */
+    @Transactional
+    public UserResponseDTO register(RegisterRequest req) {
+        if (req.getPassword() == null || !req.getPassword().equals(req.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+        String email = req.getEmail() == null ? null : req.getEmail().trim().toLowerCase();
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email is required");
+        }
+        if (userRepository.existsByEmail(email) || userRepository.existsByUsername(email)) {
+            throw new IllegalArgumentException("An account with this email already exists");
+        }
+
+        String[] name = splitName(req.getName());
+        User user = User.builder()
+                .username(email)                 // email is the login identity
+                .email(email)
+                .firstName(name[0])
+                .lastName(name[1])
+                .phone(null)
+                .password(passwordEncoder.encode(req.getPassword()))
+                .role(Role.CUSTOMER)
+                .enabled(true)
+                .build();
+        return mapToResponse(userRepository.save(user));
+    }
+
+    /**
+     * Resolves a login identifier that may be either a username (e.g. seeded
+     * accounts) or an email (accounts from the new sign-up / Google flows).
+     */
+    public UserResponseDTO getByUsernameOrEmail(String login) {
+        String value = login == null ? "" : login.trim();
+        User user = userRepository.findByUsername(value)
+                .or(() -> userRepository.findByEmail(value.toLowerCase()))
+                .orElseThrow(() -> new EntityNotFoundException("No account found for: " + login));
+        return mapToResponse(user);
+    }
+
+    /**
+     * Looks up (or lazily provisions) a local account for a verified Google user.
+     * Google accounts have no local password, so a random one is stored.
+     */
+    @Transactional
+    public UserResponseDTO findOrCreateGoogleUser(String rawEmail, String name) {
+        String email = rawEmail == null ? null : rawEmail.trim().toLowerCase();
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Google account did not provide an email");
+        }
+        User user = userRepository.findByEmail(email)
+                .or(() -> userRepository.findByUsername(email))
+                .orElse(null);
+        if (user == null) {
+            String[] parts = splitName(name);
+            user = User.builder()
+                    .username(email)
+                    .email(email)
+                    .firstName(parts[0])
+                    .lastName(parts[1])
+                    .phone(null)
+                    .password(passwordEncoder.encode(UUID.randomUUID().toString()))
+                    .role(Role.CUSTOMER)
+                    .enabled(true)
+                    .build();
+            user = userRepository.save(user);
+        }
+        return mapToResponse(user);
+    }
+
+    /** Splits a full name into [firstName, lastName]; lastName may be null. */
+    private String[] splitName(String fullName) {
+        if (fullName == null || fullName.trim().isEmpty()) {
+            return new String[]{"User", null};
+        }
+        String trimmed = fullName.trim().replaceAll("\\s+", " ");
+        int space = trimmed.indexOf(' ');
+        if (space < 0) {
+            return new String[]{trimmed, null};
+        }
+        return new String[]{trimmed.substring(0, space), trimmed.substring(space + 1)};
     }
 
     @Transactional

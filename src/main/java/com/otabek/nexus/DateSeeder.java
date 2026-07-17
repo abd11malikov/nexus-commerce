@@ -252,7 +252,7 @@ public class DateSeeder implements CommandLineRunner {
                     "Yoga Block",
                     "Eco-friendly cork yoga block for support",
                     95,
-                    "https://cdn11.bigcommerce.com/s-qh8opzgoqs/images/stencil/1280x1280/products/7550/11358/media__29175.1729187131.jpg?c=1",
+                    "https://www.google.com/aclk?sa=L&ai=DChsSEwilu9WsjNmVAxWDlFAGHVvlJXYYACICCAEQBBoCZGc&co=1&gclid=Cj0KCQjwguLSBhDLARIsAH-yPrHTT4rujjXcpn7ChaWqMXGrUrYASOSdbFIpyF3Y5tYNpP5ga-qzSMAaAhGFEALw_wcB&cid=CAAS3gHkaLtOV54nGcuv6C9n0WGskWqxGxvk-T-CnqHS3nc4IoDp7Ushm9PgOZDtr1qyIpVMOrY0gcwZ7dXHaLb2TBpnYkYyyRyDQG8CDUiGV4iOkgpecjwGqPG1QWo-6Nnz9kRKomaHBkj9cq8FTA4JhUSCDVCZgcDVyqkCJu5OBQILnxzbTKG_autAlhAUKGQa03zhlTFIUcWliEsSeLjiO8f3PJvqGJFpGIzq907ZCrGgoNHVE0lrYcUAfkRNdB0U_5_oZKIyrjcNvczHcdbdBkbuwGootuePbh4_b6ZJ6G8&cce=1&sig=AOD64_2-VhzDJ0UUSFS_J_WtvQ2hPMcMaQ&ctype=5&q=&ved=2ahUKEwirt9CsjNmVAxWFT0EAHZlXHjMQwg8oAXoECAgQDA&adurl=",
                     new BigDecimal("14.99"),
                     5L  // Sports category
             );

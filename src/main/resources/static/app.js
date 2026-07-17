@@ -91,11 +91,22 @@ document.addEventListener("DOMContentLoaded", function() {
     } else if (path.includes("login.html")) {
         var loginForm = document.getElementById('loginForm');
         if (loginForm) {
-            loginForm.addEventListener('submit', async function(e) {
+            loginForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-                await tryLogin();
+                tryLogin();
             });
         }
+        initGoogleSignIn();
+    } else if (path.includes("register.html")) {
+        var registerForm = document.getElementById('registerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                tryRegister();
+            });
+        }
+        setupPasswordMatchHint();
+        initGoogleSignIn();
     } else if (path.includes("product-detail.html")) {
         var urlParams = new URLSearchParams(window.location.search);
         var productId = urlParams.get('id');
@@ -250,36 +261,257 @@ async function updateAuthUI() {
 }
 
 /* ========================================
-   LOGIN
+   AUTH  (login / register / Google Sign-In)
    ======================================== */
-async function tryLogin() {
-    var username = document.getElementById("username")?.value?.trim();
-    var password = document.getElementById("password")?.value;
 
-    if (!username || !password) {
-        alert("Please enter username and password");
+// The backend wraps errors as "Error bro! <message>"; strip that for the UI.
+function cleanServerError(text) {
+    if (!text) return '';
+    return text.replace(/^Error bro!\s*/i, '').trim();
+}
+
+function showFormError(message) {
+    var box = document.getElementById('form-error');
+    if (box) {
+        box.textContent = message;
+        box.classList.add('show');
+    } else {
+        alert(message);
+    }
+}
+
+function clearFormError() {
+    var box = document.getElementById('form-error');
+    if (box) { box.textContent = ''; box.classList.remove('show'); }
+}
+
+// Persist the token, resolve the account via /api/users/me, then land on the store.
+// Shared by the login, register and Google flows.
+async function finishAuth(token) {
+    localStorage.setItem('auth_token', token);
+    try {
+        var res = await fetch('/api/users/me', { headers: { 'Authorization': 'Bearer ' + token } });
+        if (res.ok) {
+            var me = await res.json();
+            if (me.username) localStorage.setItem('auth_username', me.username);
+            if (me.email) localStorage.setItem('auth_email', me.email);
+        }
+    } catch (e) { /* non-fatal — token is already stored */ }
+    window.location.href = 'index.html';
+}
+
+async function tryLogin() {
+    clearFormError();
+    // Accept the redesigned #email field, but fall back to the legacy #username id.
+    var idField = document.getElementById('email') || document.getElementById('username');
+    var identifier = idField ? idField.value.trim() : '';
+    var password = document.getElementById('password')?.value || '';
+
+    if (!identifier || !password) {
+        showFormError('Please enter your email and password.');
         return;
     }
+
+    var submitBtn = document.getElementById('login-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing in…'; }
 
     try {
         var response = await fetch('/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username, password: password })
+            // The backend resolves email OR username from this field.
+            body: JSON.stringify({ username: identifier, password: password })
         });
 
-        if (!response.ok) throw new Error("Invalid username or password");
-
+        if (!response.ok) {
+            var body = await response.text();
+            throw new Error(cleanServerError(body) || 'Invalid email or password');
+        }
         var token = await response.text();
-        localStorage.setItem("auth_token", token);
-        localStorage.setItem("auth_username", username);
-
-        var userInfo = await getUserInfo();
-        if (userInfo) localStorage.setItem("auth_email", userInfo.email);
-
-        window.location.href = "index.html";
+        await finishAuth(token);
     } catch (err) {
-        alert("Login failed: " + err.message);
+        showFormError(err.message || 'Login failed. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Sign In'; }
+    }
+}
+
+async function tryRegister() {
+    clearFormError();
+    var name = document.getElementById('name')?.value.trim() || '';
+    var email = document.getElementById('email')?.value.trim() || '';
+    var password = document.getElementById('password')?.value || '';
+    var confirmPassword = document.getElementById('confirmPassword')?.value || '';
+
+    if (!name || !email || !password || !confirmPassword) {
+        showFormError('Please fill in all fields.');
+        return;
+    }
+    // Validate email format client-side so a typo shows a clean message
+    // instead of the server's raw validation response.
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        showFormError('Please enter a valid email address.');
+        return;
+    }
+    if (password.length < 6) {
+        showFormError('Password must be at least 6 characters.');
+        return;
+    }
+    if (password !== confirmPassword) {
+        showFormError('Passwords do not match.');
+        return;
+    }
+
+    var submitBtn = document.getElementById('register-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Creating account…'; }
+
+    try {
+        var response = await fetch('/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name: name, email: email, password: password, confirmPassword: confirmPassword })
+        });
+
+        if (!response.ok) {
+            var body = await response.text();
+            throw new Error(cleanServerError(body) || 'Registration failed');
+        }
+        // Registration returns a JWT → auto sign-in straight to the storefront.
+        var token = await response.text();
+        await finishAuth(token);
+    } catch (err) {
+        showFormError(err.message || 'Registration failed. Please try again.');
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Create Account'; }
+    }
+}
+
+// Live "passwords match" feedback on the register page.
+function setupPasswordMatchHint() {
+    var pw = document.getElementById('password');
+    var cpw = document.getElementById('confirmPassword');
+    var hint = document.getElementById('match-hint');
+    if (!pw || !cpw || !hint) return;
+
+    function check() {
+        if (!cpw.value) {
+            hint.textContent = '';
+            hint.classList.remove('error');
+            cpw.classList.remove('invalid');
+            return;
+        }
+        if (pw.value === cpw.value) {
+            hint.textContent = '✓ Passwords match';
+            hint.classList.remove('error');
+            hint.style.color = 'var(--success)';
+            cpw.classList.remove('invalid');
+        } else {
+            hint.textContent = 'Passwords do not match';
+            hint.classList.add('error');
+            hint.style.color = '';
+            cpw.classList.add('invalid');
+        }
+    }
+    pw.addEventListener('input', check);
+    cpw.addEventListener('input', check);
+}
+
+function togglePasswordVisibility(inputId, btn) {
+    var input = document.getElementById(inputId);
+    if (!input) return;
+    var reveal = input.type === 'password';
+    input.type = reveal ? 'text' : 'password';
+    btn.innerHTML = reveal
+        ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'
+        : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+    btn.setAttribute('aria-label', reveal ? 'Hide password' : 'Show password');
+}
+
+/* ---- Google Identity Services ---- */
+var googleClientId = null;
+
+// Fetches the public client id; if configured, reveals + renders the Google button.
+async function initGoogleSignIn() {
+    var wrap = document.getElementById('google-btn-wrap');
+    if (!wrap) return;
+
+    try {
+        var res = await fetch('/auth/google/config');
+        if (!res.ok) return;
+        var cfg = await res.json();
+        if (!cfg.enabled || !cfg.clientId) return; // not configured → button + divider stay hidden
+        googleClientId = cfg.clientId;
+    } catch (e) {
+        return;
+    }
+
+    wrap.classList.add('visible');
+    var divider = document.getElementById('auth-divider');
+    if (divider) divider.classList.add('visible');
+
+    var tries = 0;
+    var timer = setInterval(function () {
+        tries++;
+        if (window.google && window.google.accounts && window.google.accounts.id) {
+            clearInterval(timer);
+            renderGoogleButton();
+        } else if (tries > 40) { // give up after ~6s
+            clearInterval(timer);
+            var fb = document.getElementById('google-fallback');
+            if (fb) fb.style.display = 'flex';
+        }
+    }, 150);
+}
+
+function renderGoogleButton() {
+    try {
+        var theme = document.documentElement.getAttribute('data-theme');
+        window.google.accounts.id.initialize({
+            client_id: googleClientId,
+            callback: onGoogleCredential
+        });
+        var host = document.getElementById('google-btn');
+        window.google.accounts.id.renderButton(host, {
+            theme: theme === 'dark' ? 'filled_black' : 'outline',
+            size: 'large',
+            width: host.offsetWidth || 360,
+            text: 'continue_with',
+            shape: 'rectangular',
+            logo_alignment: 'center'
+        });
+    } catch (e) {
+        console.error('Google button render failed:', e);
+        var fb = document.getElementById('google-fallback');
+        if (fb) fb.style.display = 'flex';
+    }
+}
+
+function promptGoogle() {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+        window.google.accounts.id.prompt();
+    } else {
+        showFormError('Google Sign-In is still loading. Please try again in a moment.');
+    }
+}
+
+async function onGoogleCredential(response) {
+    clearFormError();
+    if (!response || !response.credential) {
+        showFormError('Google Sign-In was cancelled.');
+        return;
+    }
+    try {
+        var res = await fetch('/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: response.credential })
+        });
+        if (!res.ok) {
+            var body = await res.text();
+            throw new Error(cleanServerError(body) || 'Google Sign-In failed');
+        }
+        var token = await res.text();
+        await finishAuth(token);
+    } catch (err) {
+        showFormError(err.message || 'Google Sign-In failed. Please try again.');
     }
 }
 
@@ -1333,9 +1565,10 @@ async function loadCartForCheckout() {
             document.getElementById('review-phone').textContent = 'Loading...';
         } else {
             var user = await userResponse.json();
-            document.getElementById('review-name').textContent = (user.firstName + ' ' + user.lastName).trim();
-            document.getElementById('review-email').textContent = user.email;
-            document.getElementById('review-phone').textContent = user.phone;
+            var fullName = ((user.firstName || '') + ' ' + (user.lastName || '')).trim();
+            document.getElementById('review-name').textContent = fullName || 'N/A';
+            document.getElementById('review-email').textContent = user.email || 'N/A';
+            document.getElementById('review-phone').textContent = user.phone || 'N/A';
         }
     } catch (err) {
         console.error("Failed to load cart for checkout:", err);

@@ -30,9 +30,13 @@ public class OrderService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final EmailService emailService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public OrderResponseDTO placeOrder(String email, OrderRequestDTO requestDTO) {
+        System.out.println("Saved order to database instantly.");
+
+
         User user = userRepository.findByEmail(email).orElseThrow(() ->
                 new EntityNotFoundException("User not found"));
 
@@ -80,8 +84,14 @@ public class OrderService {
         order.setTotalAmount(totalPrice);
 
         Order saved = orderRepository.save(order);
-        return mapToResponse(saved);
+
+
+        OrderResponseDTO orderResponseDTO = mapToResponse(saved);
+        String message = email + ":"+user.getUsername() +":"+ orderResponseDTO.getId()+":"+ saved.getShippingAddress();
+        kafkaProducerService.sendOrderEvent(message);
+        return orderResponseDTO;
     }
+
     public List<OrderResponseDTO> getAll() {
         return orderRepository.findAll().stream()
                 .map(this::mapToResponse)
